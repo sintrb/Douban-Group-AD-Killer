@@ -5,59 +5,82 @@
 # @Link    : https://github.com/sintrb/Douban-Group-AD-Killer
 # @Version : 1.0
 
-from base import BaseClassifier
+from base import BaseClassifier, test_classifer
+
+class BaseProbability():
+	def __init__(self, cls, prt):
+		self.cls = cls
+		self.prt = prt
+
+class BaseAttribute(object):
+	def __init__(self, atb):
+		self.atb = atb
+		self.count = 0
+		self.map = {}
+	def all_probability(self):
+		return self.map.values()
+	def get_probability(self, cls):
+		if cls not in self.map:
+			self.map[cls] = BaseProbability(cls, 0.0)
+		return self.map[cls] 
+
+class BaseDriver(object):
+	def __init__(self):
+		self.classes = {}
+		self.attributes = {}
+	def has_sample(self, sample):
+		return sample in self.classes
+	def add_sample(self, sample, cls):
+		if cls not in self.classes:
+			self.classes[cls] = set()
+		self.classes[cls].add(sample)
+	def all_class(self):
+		return self.classes
+	def all_attribute(self):
+		return self.attributes.values()
+	def has_attribute(self, atb):
+		return atb in self.attributes
+	def get_attribute(self, atb):
+		if atb not in self.attributes:
+			self.attributes[atb] = BaseAttribute(atb)
+		return self.attributes[atb]
+	def show_info(self):
+		for atb in self.all_attribute():
+			for prt in atb.all_probability():
+				print '%s -- > %s %s'%(atb.atb, prt.cls, prt.prt)
 
 class NaiveBayesClassifier(BaseClassifier):
 	"""朴素贝叶斯分类"""
-	def __init__(self):
+	def __init__(self, db):
 		super(NaiveBayesClassifier, self).__init__()
-		self.classes = {}
-		self.attributes = {}
+		self.db = db
+		
 	def training(self, sample, cls, force=False):
-		if not cls in self.classes:
-			self.classes[cls] = set()
-		if not sample in self.classes[cls] or force:
-			self.classes[cls].add(sample)
+		if not self.db.has_sample(sample) or force:
+			self.db.add_sample(sample, cls)
 		for a in sample:
-			if not a in self.attributes:
-				self.attributes[a] = {'_count_':0.0}
-			att = self.attributes[a]
-			if not cls in att:
-				att[cls] = 0
-			att[cls] = att[cls] + 1.0/len(sample)	# 分解每个属性的权重
-			att['_count_'] = att['_count_'] + 1
+			att = self.db.get_attribute(a)
+			prt = att.get_probability(cls)
+			prt.prt = prt.prt + 1.0/len(sample)
+			att.count = att.count + 1
 	def classify(self, sample):
 		clss = {}
-		for c in self.classes:
+		for c in self.db.all_class():
 			clss[c]  = 0.0
 		for a in sample:
-			if a in self.attributes:
-				att = self.attributes[a]
-				for c, p in att.items():
-					if c == '_count_':
-						continue
-					if not c in clss:
+			if self.db.has_attribute(a):
+				atb = self.db.get_attribute(a)
+				for prt in atb.all_probability():
+					if not prt.cls in clss:
 						clss[c] = 0
-					clss[c] = clss[c] + (p / att['_count_'])
+					clss[prt.cls] = clss[prt.cls] + (prt.prt / atb.count)
 			else:
 				print 'unknown attribute: %s'%a
 		return clss
 
+
 if __name__ == '__main__':
 	# 测试
-	nbc = NaiveBayesClassifier()
-
-	# 分类训练
-	nbc.training('abcdefghijklmnopqrst', 0)
-	nbc.training('aab', 0)
-	nbc.training('a', 1)
-	nbc.training('d', 1)
-	nbc.training('e', 2)
-
-	# 分类测试
-	print nbc.whichclass('ab')
-	print nbc.whichclass('c')
-	print nbc.whichclass('d')
-	print nbc.whichclass('t')
-	print nbc.whichclass('opqrst')
+	nbc = NaiveBayesClassifier(BaseDriver())
+	test_classifer(nbc)
 
