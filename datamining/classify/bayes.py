@@ -11,6 +11,8 @@ class BaseProbability():
 	def __init__(self, cls, prt):
 		self.cls = cls
 		self.prt = prt
+	def save(self):
+		pass
 
 class BaseAttribute(object):
 	def __init__(self, atb):
@@ -22,7 +24,9 @@ class BaseAttribute(object):
 	def get_probability(self, cls):
 		if cls not in self.map:
 			self.map[cls] = BaseProbability(cls, 0.0)
-		return self.map[cls] 
+		return self.map[cls]
+	def save(self):
+		pass
 
 class BaseDriver(object):
 	def __init__(self):
@@ -48,6 +52,8 @@ class BaseDriver(object):
 		for atb in self.all_attribute():
 			for prt in atb.all_probability():
 				print '%s -- > %s %s'%(atb.atb, prt.cls, prt.prt)
+	def save(self):
+		pass
 
 class NaiveBayesClassifier(BaseClassifier):
 	"""朴素贝叶斯分类"""
@@ -62,7 +68,11 @@ class NaiveBayesClassifier(BaseClassifier):
 			att = self.db.get_attribute(a)
 			prt = att.get_probability(cls)
 			prt.prt = prt.prt + 1.0/len(sample)
+			prt.save()
+			
 			att.count = att.count + 1
+			att.save()
+		self.db.save()
 	def classify(self, sample):
 		clss = {}
 		for c in self.db.all_class():
