@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>手工分类</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+</head>
+<body>
+    {% if topics %}{% for t in topics %}
+    	<div>
+    	{{t.created}} {{t.type}} <a href="{{t.url}}" title="{{t.text}}">{{t.title}}</a>
+    	{% for a in types %}
+    	<a href="/training/{{t.tid}}/{{a.0}}">{{a.1}}</a>
+    	{% endfor %}
+    	</div>
+    {% endfor %}{% else %}
+    没有东西
+    {% endif %}
+</body>
+</html>
