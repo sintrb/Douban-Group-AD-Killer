@@ -62,7 +62,7 @@ class NaiveBayesClassifier(BaseClassifier):
 		self.db = db
 		
 	def training(self, sample, cls, force=False):
-		if not self.db.has_sample(sample) or force:
+		if force or not self.db.has_sample(sample):
 			self.db.add_sample(sample, cls)
 		for a in sample:
 			att = self.db.get_attribute(a)
@@ -82,10 +82,11 @@ class NaiveBayesClassifier(BaseClassifier):
 				atb = self.db.get_attribute(a)
 				for prt in atb.all_probability():
 					if not prt.cls in clss:
-						clss[c] = 0
+						clss[prt.cls] = 0
 					clss[prt.cls] = clss[prt.cls] + (prt.prt / atb.count)
 			else:
-				print 'unknown attribute: %s'%a
+# 				print 'unknown attribute: %s'%a
+				pass
 		return clss
 
 
