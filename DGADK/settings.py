@@ -58,12 +58,38 @@ WSGI_APPLICATION = 'DGADK.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {
-    'default': {
+DBS = {
+    'sqlite': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'sqlite.db3'),
+    },
+    'mysql': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST':'172.16.0.200',
+        'USER':'trb',
+        'PASSWORD':'123',
+        'NAME':'dgadk',
+        'PORT':3306
     }
 }
+try:
+    import sae
+    DBS['saemysql'] = {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST':sae.const.MYSQL_HOST,
+        'USER':sae.const.MYSQL_USER,
+        'PASSWORD':sae.const.MYSQL_PASS,
+        'NAME':sae.const.MYSQL_DB,
+        'PORT':int(sae.const.MYSQL_PORT)
+    }
+    DATABASES = {
+                 'default':DBS['saemysql']
+                 }
+    DEBUG = False
+except:
+    DATABASES = {
+                 'default':DBS['mysql']
+                 }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -83,3 +109,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+FILE_CHARSET='utf-8'
+DEFAULT_CHARSET='utf-8'
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'templates').replace('\\','/'),
+)
+
+
+
+

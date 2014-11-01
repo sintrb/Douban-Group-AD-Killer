@@ -14,11 +14,12 @@ def tdm(request, txt):
     c = nbc.whichclass(txt)
     return HttpResponse('%ss  %s'%(time.time()-st, c))
 
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'DGADK.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
 
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^t/([a-zA-Z0-9]+)', tdm),
-)
+from automatic import views as automaticviews
+
+newurl = []
+newurl.extend([url(*arg) for arg in automaticviews.urls])
+newurl.append(url(r'^admin/', include(admin.site.urls)))
+urlpatterns = patterns('', *newurl)
+
+
