@@ -29,7 +29,8 @@ class Sample(models.Model):
 
 class Drive(BaseDriver):
     def has_sample(self, text):
-        return len(Sample.objects.filter(text=text))
+#         return len(Sample.objects.filter(text=text))
+        return True
     def add_sample(self, text, cls):
         sample = Sample(cls=cls, text=text)
         sample.save()
