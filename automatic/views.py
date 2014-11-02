@@ -35,7 +35,7 @@ def get_topicatbs(topic):
     return [t for t in cut(topic.title+' '+topic.text) if not t in ignor]
 
 
-@path('^newtopic')
+@path('^newtopic/')
 def new_topic(request):
     lst = get_topic_list()
     ids = set([t['id'] for t in lst])
