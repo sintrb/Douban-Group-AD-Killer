@@ -58,7 +58,11 @@ def new_topic(request):
         if len(t.text) < 10 or len(t.text) > 1000:
             # 忽略过长过过短的
             t.type = 'i'
-        t.save()
+        try:
+            t.save()
+        except:
+            t.text = ''
+            t.save()
         ts.append(t)
         count = count - 1
         if not count:
@@ -104,6 +108,8 @@ def training(request, act=None):
     if act != 'list':
         ts = ts.filter(type='')
     ts = ts[0:50]
+    if len(ts)==0:
+        return new_topic(request)
     cxt = RequestContext(request)
     cxt['topics'] = ts
     cxt['types'] = [
