@@ -79,6 +79,7 @@ def training_which_class(request, tid):
     t = GroupTopic.objects.filter(tid=tid).first()
     t.type = 'i'
     t.save()
+    
     return HttpResponse('ignored')
 
 @path('^training/([0-9]+)/q')
