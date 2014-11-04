@@ -116,7 +116,7 @@ def training(request, pag=0):
     if not pag:
         pag = 0
     psize = 25
-    ts = GroupTopic.objects.order_by("-id").filter(Q(type='') | (Q(other__in=['auto', '', 'auto ad']) & ~Q(type='i')))
+    ts = GroupTopic.objects.order_by("-id").filter(Q(type='') | ((Q(other='') | Q(other__startwith='auto')) & ~Q(type='i')))
     st = int(pag) * psize
     ts = ts[st:st + psize]
     cxt = RequestContext(request)
