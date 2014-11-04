@@ -163,6 +163,16 @@ def findad(request, tid=''):
             report_topic(t.tid)
         except:
             t.other = 'failed'
+    
+    p = r['po'] / (r['po'] + r['ok'])
+    if p > 0.60:
+        # 色情
+        t.other = t.other + " po" 
+        try:
+            report_topic(t.tid, '1')
+        except:
+            t.other = 'failed'
+    
     t.save()
     rt = time.time() - st
     res = {

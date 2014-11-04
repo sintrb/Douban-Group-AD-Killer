@@ -15,8 +15,12 @@ if __name__ == "__main__":
     timestep = 5
     waittime = mintime
     while True:
-        html = urllib2.urlopen('http://127.0.0.1:8080/findad/').read()
-        print html
+        html = ''
+        try:
+            html = urllib2.urlopen('http://127.0.0.1:8080/findad/').read()
+            print html
+        except:
+            print 'server error'
         if len(html) < 5 and waittime < maxtime:
             waittime = waittime + timestep
         else:
