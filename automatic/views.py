@@ -21,7 +21,9 @@ from base.models import Drive
 from datamining.classify.bayes import NaiveBayesClassifier
 
 ignor = '~！@#￥%……&*（）——+-=，。、；‘【】、《》？：“｛｝| ,./;<>?:"[]{}\\~!@#$%^&*()-=_+'
-
+ignors = [
+          '图片',
+          ]
 urls = []
 def path(patrn, *args):        
     def m(func):
@@ -34,7 +36,7 @@ def path(patrn, *args):
 
 
 def get_topicatbs(topic):
-    return [t for t in cut(topic.title + ' ' + topic.text) if not t in ignor]
+    return [t for t in cut(topic.title + ' ' + topic.text) if t not in ignor and t not in ignors]
 
 
 @path('^newtopic/')
