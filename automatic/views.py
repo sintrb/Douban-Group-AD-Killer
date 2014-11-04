@@ -93,15 +93,19 @@ def training_ignor_class(request, tid):
 
 @path('^training/([0-9]+)/([a-z]+)')
 def training_to_class(request, tid, cls):
-    t = GroupTopic.objects.filter(other__in=['auto', '', 'auto ad']).first()
+    t = GroupTopic.objects.filter(tid=tid).first()
     st = time.time()
-    sample = get_topicatbs(t)
-    nbc = NaiveBayesClassifier(Drive())
-    nbc.training(sample, cls)
-    t.other = 'train'
-    t.type = cls
-    t.save()
-    res = '%s %s' % ('/'.join(sample), time.time() - st)
+    res = None
+    if t.other == 'train':
+        res = 'trained'
+    else:
+        sample = get_topicatbs(t)
+        nbc = NaiveBayesClassifier(Drive())
+        nbc.training(sample, cls)
+        t.other = 'train'
+        t.type = cls
+        t.save()
+        res = '%s %s' % ('/'.join(sample), time.time() - st)
     return HttpResponse(res)
 
 @path('^training/([0-9]*)')
