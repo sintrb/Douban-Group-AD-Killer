@@ -11,13 +11,19 @@
 <body>
     {% if topics %}{% for t in topics %}
     	<div>
-    	{{t.created}} {{t.type}} <a href="{{t.url}}" title="{{t.text}}">{{t.title}}</a>
+    	{{t.created}} <a href="{{t.url}}" title="{{t.text}}">{{t.title}}</a>
     	{% for a in types %}
     	<a href="/training/{{t.tid}}/{{a.0}}">{{a.1}}</a>
-    	{% endfor %}
+    	{% endfor %} {{t.type}} / {{t.other}}
     	</div>
-    {% endfor %}{% else %}
+    {% endfor %}
+    {% else %}
     没有东西
     {% endif %}
+    <div style="margin:10px auto; width:150px;">
+        <a href="{{page|add:'-1'}}">上一页</a>
+        <span>{{page}}</span>
+        <a href="{{page|add:'1'}}">下一页</a>
+    </div>
 </body>
 </html>

@@ -13,6 +13,8 @@ from django.template.context import RequestContext
 from doubapi import get_topic_list, get_topic, comment_topic, report_topic
 from models import GroupTopic
 
+from django.db.models import Q
+
 from datamining.funs import cut
 import time
 from base.models import Drive
@@ -91,7 +93,7 @@ def training_ignor_class(request, tid):
 
 @path('^training/([0-9]+)/([a-z]+)')
 def training_to_class(request, tid, cls):
-    t = GroupTopic.objects.filter(tid=tid, other='').first()
+    t = GroupTopic.objects.filter(other__in=['auto', '', 'auto ad']).first()
     st = time.time()
     sample = get_topicatbs(t)
     nbc = NaiveBayesClassifier(Drive())
@@ -102,14 +104,14 @@ def training_to_class(request, tid, cls):
     res = '%s %s' % ('/'.join(sample), time.time() - st)
     return HttpResponse(res)
 
-@path('^training/([a-z]*)')
-def training(request, act=None):
-    ts = GroupTopic.objects.filter()
-    if act != 'list':
-        ts = ts.filter(type='')
-    ts = ts[0:50]
-    if len(ts)==0:
-        return new_topic(request)
+@path('^training/([0-9]*)')
+def training(request, pag=0):
+    if not pag:
+        pag = 0
+    psize = 25
+    ts = GroupTopic.objects.order_by("-id").filter(Q(type='') | (Q(other__in=['auto', '', 'auto ad']) & ~Q(type='i')))
+    st = int(pag) * psize
+    ts = ts[st:st + psize]
     cxt = RequestContext(request)
     cxt['topics'] = ts
     cxt['types'] = [
@@ -121,6 +123,7 @@ def training(request, act=None):
                     ('q', '测试'),
                     ('i', '忽略'),
                     ]
+    cxt['page'] = int(pag)
     return render_to_response('training.html', cxt)
 
 @path('^findad/([0-9]*)')
