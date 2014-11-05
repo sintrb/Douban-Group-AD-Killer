@@ -152,26 +152,28 @@ def findad(request, tid=''):
     ct = time.time() - st
     
     t.type = max(r.items(), key=lambda x:x[1])[0]
-    p = r['ad'] / (r['ad'] + r['ok'])
-    t.other = 'auto'
-    st = time.time()
-    if p > 0.60:
-        # 广告
-        t.other = t.other + " ad" 
-        try:
-            comment_topic(t.tid, 'mark %s' % p)
-            report_topic(t.tid)
-        except:
-            t.other = 'failed'
     
-    p = r['po'] / (r['po'] + r['ok'])
-    if p > 0.60:
-        # 色情
-        t.other = t.other + " po" 
-        try:
-            report_topic(t.tid, '1')
-        except:
-            t.other = 'failed'
+    if 'ad' in r and 'ok' in r:
+        p = r['ad'] / (r['ad'] + r['ok'])
+        t.other = 'auto'
+        st = time.time()
+        if p > 0.60:
+            # 广告
+            t.other = t.other + " ad" 
+            try:
+                comment_topic(t.tid, 'mark %s' % p)
+                report_topic(t.tid)
+            except:
+                t.other = 'failed'
+    if 'po' in r and 'ok' in r:
+        p = r['po'] / (r['po'] + r['ok'])
+        if p > 0.60:
+            # 色情
+            t.other = t.other + " po" 
+            try:
+                report_topic(t.tid, '1')
+            except:
+                t.other = 'failed'
     
     t.save()
     rt = time.time() - st
