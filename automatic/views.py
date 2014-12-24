@@ -162,7 +162,7 @@ def findad(request, tid=''):
                 # 广告
                 t.other = t.other + " ad" 
                 try:
-                    comment_topic(t.tid, 'mark %s' % p)
+#                     comment_topic(t.tid, 'mark %s' % p)
                     report_topic(t.tid)
                 except:
                     t.other = 'failed'
